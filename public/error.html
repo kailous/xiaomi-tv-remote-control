@@ -1,9 +1,9 @@
-<!-- public/apps.html -->
+<!-- public/error.html -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>电视应用管理</title>
+  <title>错误页面</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -11,15 +11,19 @@
   <div id="header-container"></div>
   <div id="nav-container"></div>
 
-  <h1>电视应用列表</h1>
-  <button id="loadAppsBtn">刷新列表</button>
-  <ul id="appList"></ul>
+  <h1>错误</h1>
+  <p id="errorMessage">发生错误。</p>
 
   <!-- 加载公共脚本 -->
   <script src="js/common.js"></script>
   <script src="js/header.js"></script>
   <script src="js/nav.js"></script>
-  <!-- 加载页面特定脚本 -->
-  <script src="js/apps.js"></script>
+  <!-- 页面特定脚本 -->
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const error = getUrlParam('error') || '未知错误';
+      document.getElementById('errorMessage').innerText = error;
+    });
+  </script>
 </body>
 </html>

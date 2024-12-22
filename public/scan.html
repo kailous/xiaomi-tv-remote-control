@@ -1,28 +1,26 @@
+<!-- public/scan.html -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <title>小米电视扫描</title>
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <!-- 这里插入一个导航容器 -->
+  <!-- Header 和 Nav -->
   <div id="header-container"></div>
   <div id="nav-container"></div>
 
   <h1>小米电视扫描</h1>
   <button id="scanBtn">扫描局域网</button>
-
-  <p>本机IP: <span id="localIp"></span></p>
   <p>已识别的小米电视:</p>
   <ul id="deviceList"></ul>
 
-  <!-- 在此处加载顶部栏，并执行页面自身逻辑 -->
-  <script src="./js/header.js"></script>
-
-  <!-- 在此处加载导航，并执行页面自身逻辑 -->
-  <script src="./js/nav.js"></script>
-  
-  <!-- 在此处引入外部 JS 文件 -->
-  <script src="./js/scan.js"></script>
+  <!-- 加载公共脚本 -->
+  <script src="js/common.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/nav.js"></script>
+  <!-- 加载页面特定脚本 -->
+  <script src="js/scan.js"></script>
 </body>
 </html>

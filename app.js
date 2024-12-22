@@ -1,32 +1,26 @@
 // app.js
 const express = require('express');
+const app = express();
 const path = require('path');
 
-const app = express();
+// 引入路由
+const scanRoutes = require('./routes/scan');
+const tvRoutes = require('./routes/tv');
 
+// 设置静态文件目录，并将默认的 index 文件设置为 scan.html
+app.use(express.static(path.join(__dirname, 'public'), { index: 'scan.html' }));
 
+// 使用路由
+app.use('/', scanRoutes);
+app.use('/', tvRoutes);
 
-// 如果需要解析 POST 请求体，可以引入 body-parser
-// const bodyParser = require('body-parser');
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
-
-app.get('/', (req, res) => {
-  res.redirect('/scan.html'); 
+// 处理所有未匹配的路由，重定向到错误页面
+app.use((req, res, next) => {
+  res.redirect('/error.html?error=页面未找到');
 });
 
-// 静态资源：将 public 文件夹对外开放
-app.use(express.static(path.join(__dirname, 'public')));
-
-// 引入扫描路由
-const scanRouter = require('./routes/scan');
-app.use('/scan', scanRouter);
-// 引入遥控器
-const tvRouter = require('./routes/tv');
-app.use('/tv', tvRouter);
-
 // 启动服务器
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`服务器正在运行在端口 ${PORT}`);
 });

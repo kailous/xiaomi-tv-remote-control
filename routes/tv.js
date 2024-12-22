@@ -4,132 +4,154 @@ const router = express.Router();
 const axios = require('axios');
 
 /**
- * 遥控按键接口
- * GET /tv/key?ip=192.168.1.120&keyName=home
- * 
- * 示例:
- * http://192.168.1.120:6095/controller?action=keyevent&keycode=home
+ * 配置电视的基础 URL
+ * @param {string} ip - 电视的 IP 地址（包括端口）
+ * @returns {string} 电视的基础 URL
  */
-router.get('/key', async (req, res) => {
+function getTvBaseUrl(ip) {
+  return `http://${ip}`;
+}
+
+/**
+ * 发送请求到电视的指定 API
+ * @param {string} ip - 电视的 IP 地址（包括端口）
+ * @param {string} action - 动作名称
+ * @param {object} params - 其他参数
+ * @returns {object} 电视的响应
+ */
+async function sendRequest(ip, action, params = {}) {
+  const baseUrl = getTvBaseUrl(ip);
+  const url = new URL('/controller', baseUrl);
+  url.searchParams.append('action', action);
+
+  // 根据不同的动作，调整请求参数
+  if (action === 'getinstalledapp') {
+    Object.keys(params).forEach(key => {
+      url.searchParams.append(key, params[key]);
+    });
+  } else if (action === 'startapp') {
+    Object.keys(params).forEach(key => {
+      url.searchParams.append(key, params[key]);
+    });
+  } else if (action === 'keyevent') {
+    Object.keys(params).forEach(key => {
+      url.searchParams.append(key, params[key]);
+    });
+  }
+
   try {
-    const { ip, keyName } = req.query;
-    if (!ip || !keyName) {
-      return res.json({ success: false, error: '参数不完整: 需要 ip 和 keyName' });
-    }
-    
-    // 构造目标URL
-    const targetUrl = `http://${ip}:6095/controller?action=keyevent&keycode=${keyName}`;
-
-    // 发请求给电视
-    const resp = await axios.get(targetUrl, { timeout: 2000 });
-
-    // 电视端若返回成功，可 resp.data 中查看具体字段
-    if (resp.data && resp.data.status === 0) {
-      res.json({ success: true, data: resp.data });
-    } else {
-      res.json({ success: false, error: '电视返回异常', data: resp.data });
-    }
+    const response = await axios.get(url.toString(), { timeout: 5000 });
+    return response.data;
   } catch (error) {
-    console.error('遥控按键出错:', error.message);
-    res.json({ success: false, error: error.message });
+    console.error(`请求电视 ${action} 失败:`, error.message);
+    return { status: 1, msg: '请求失败', data: null };
+  }
+}
+
+/**
+ * 获取电视基础信息
+ * API: http://xxx.xxx.xxx.xxx:6095/request?action=isalive
+ * @param {string} ip - 电视的 IP 地址（包括端口）
+ * @returns {object} 电视的基础信息
+ */
+async function getDeviceInfo(ip) {
+  const baseUrl = getTvBaseUrl(ip);
+  const url = `${baseUrl}/request?action=isalive`;
+
+  try {
+    const response = await axios.get(url, { timeout: 5000 });
+    return response.data;
+  } catch (error) {
+    console.error('获取电视基础信息失败:', error.message);
+    return { status: 1, msg: '请求失败', data: null };
+  }
+}
+
+/**
+ * 获取电视设备名称
+ * @param {string} ip - 电视的 IP 地址（包括端口）
+ * @returns {string} 设备名称
+ */
+async function getDeviceName(ip) {
+  const info = await getDeviceInfo(ip);
+  if (info.status === 0 && info.data && info.data.devicename) {
+    return info.data.devicename;
+  }
+  return '未知设备';
+}
+
+// 处理按键事件
+router.get('/tv/key', async (req, res) => {
+  const { ip, keycode } = req.query;
+  if (!ip || !keycode) {
+    return res.json({ status: 1, msg: '缺少参数 ip 或 keycode', data: {} });
+  }
+
+  const validKeycodes = [
+    'power', 'up', 'down', 'left', 'right',
+    'enter', 'home', 'back', 'menu',
+    'volumeup', 'volumedown'
+  ];
+
+  if (!validKeycodes.includes(keycode)) {
+    return res.json({ status: 1, msg: '无效的 keycode', data: {} });
+  }
+
+  try {
+    const result = await sendRequest(ip, 'keyevent', { keycode });
+    res.json(result);
+  } catch (err) {
+    console.error('处理按键事件失败:', err);
+    res.json({ status: 1, msg: '内部服务器错误', data: {} });
   }
 });
 
-/**
- * 获取已安装的应用列表
- * GET /tv/apps?ip=192.168.1.120
- * 
- * 示例接口(需根据不同电视版本微调):
- * http://192.168.1.120:6095/request?action=getInstalledAppList
- */
-router.get('/apps', async (req, res) => {
-    try {
-      const { ip } = req.query;
-      if (!ip) {
-        return res.json({ success: false, error: '参数不完整: 需要 ip' });
-      }
-  
-      // 根据实际测试确认此 URL 是否可行，否则需要换成其他，例如:
-      // http://[IP]:6095/request?action=getInstalledAppList
-      // 或者 http://[IP]:6095/controller?action=getInstalledApp
-      const targetUrl = `http://${ip}:6095/controller?action=getinstalledapp&count=999&changeIcon=1`;
-      console.log('请求URL:', targetUrl);
-  
-      const resp = await axios.get(targetUrl, { timeout: 3000 });
-      // 返回结果示例:
-      // {
-      //   "status": 0,
-      //   "msg": "success",
-      //   "data": {
-      //     "AppInfo": [
-      //       {
-      //         "PackageName": "com.mitv.alarmcenter",
-      //         "IconURL": "http://xxx.xxx.xxx.xxx:6095/request?action=getResource&name=com.mitv.alarmcenter0.png",
-      //         "AppName": "定时提醒",
-      //         "Order": 1
-      //       },
-      //       ...
-      //     ]
-      //   }
-      // }
-  
-      if (
-        resp.data &&
-        resp.data.status === 0 &&
-        resp.data.data &&
-        Array.isArray(resp.data.data.AppInfo)
-      ) {
-        // 将 AppInfo 映射成您想返回的字段
-        const apps = resp.data.data.AppInfo.map(app => ({
-            pkg: app.PackageName,
-            label: app.AppName,
-            icon: app.IconURL
-        }));
-        res.json({ success: true, apps });
-      } else {
-        // 如果没有返回 AppInfo 数组
-        res.json({ success: false, error: '电视未返回有效列表', raw: resp.data });
-      }
-    } catch (error) {
-      console.error('获取App列表出错:', error.message);
-      res.json({ success: false, error: error.message });
-    }
-  });
+// 获取应用列表
+router.get('/tv/apps', async (req, res) => {
+  const { ip, count = 999, changeIcon = 1 } = req.query;
+  if (!ip) {
+    return res.json({ status: 1, msg: '缺少参数 ip', data: null });
+  }
 
-/**
- * 启动指定包名的应用
- * GET /tv/launch?ip=192.168.1.120&pkg=com.xiaomi.mitv.tvplayer
- * 
- * 示例接口(需根据不同电视版本微调):
- * http://192.168.1.120:6095/request?action=startApp&pkg=com.xiaomi.mitv.tvplayer
- */
-router.get('/launch', async (req, res) => {
-    try {
-      const { ip, pkg } = req.query;
-      if (!ip || !pkg) {
-        return res.json({ success: false, error: '参数不完整: 需要 ip 和 pkg' });
-      }
-  
-      // 修复后的启动应用接口
-      const targetUrl = `http://${ip}:6095/controller?action=startapp&type=packagename&packagename=${pkg}`;
-  
-      const resp = await axios.get(targetUrl, { timeout: 3000 });
-      // 正常返回:
-      // {
-      //   "status": 0,
-      //   "msg": "success",
-      //   "data": null
-      // }
-  
-      if (resp.data && resp.data.status === 0) {
-        res.json({ success: true, data: resp.data });
-      } else {
-        res.json({ success: false, error: '启动失败', raw: resp.data });
-      }
-    } catch (error) {
-      console.error('启动App出错:', error.message);
-      res.json({ success: false, error: error.message });
-    }
-  });
+  try {
+    const result = await sendRequest(ip, 'getinstalledapp', { count, changeIcon });
+    res.json(result);
+  } catch (err) {
+    console.error('获取应用列表失败:', err);
+    res.json({ status: 1, msg: '内部服务器错误', data: null });
+  }
+});
+
+// 启动应用
+router.get('/tv/launch', async (req, res) => {
+  const { ip, packagename } = req.query;
+  if (!ip || !packagename) {
+    return res.json({ status: 1, msg: '缺少参数 ip 或 packagename', data: null });
+  }
+
+  try {
+    const result = await sendRequest(ip, 'startapp', { type: 'packagename', packagename });
+    res.json(result);
+  } catch (err) {
+    console.error('启动应用失败:', err);
+    res.json({ status: 1, msg: '内部服务器错误', data: null });
+  }
+});
+
+// 获取设备名称
+router.get('/api/get-device-name', async (req, res) => {
+  const { ip } = req.query;
+  if (!ip) {
+    return res.json({ deviceName: '未知设备' });
+  }
+
+  try {
+    const deviceName = await getDeviceName(ip);
+    res.json({ deviceName });
+  } catch (err) {
+    console.error('获取设备名称失败:', err);
+    res.json({ deviceName: '未知设备' });
+  }
+});
 
 module.exports = router;

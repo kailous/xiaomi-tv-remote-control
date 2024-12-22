@@ -1,22 +1,41 @@
-// 加载 header.html
+// public/js/header.js
+
 fetch('header.html')
-.then(res => res.text())
-.then(html => {
-  document.getElementById('header-container').innerHTML = html;
-  
-  // 1) 获取当前页面 URL 参数中的 ip（若需要）
-  const urlParams = new URLSearchParams(window.location.search);
-  const tvIpValue = urlParams.get('ip') || '无';
+  .then(response => response.text())
+  .then(html => {
+    document.getElementById('header-container').innerHTML = html;
 
-  // 2) 从后端获取本机IP（或者在之前的扫描接口里已有），假设变量名是 localIpValue
-  //   比如在 /scan 路由返回里已经包含 localIp
-  //   这里做个示例: (真实项目中您会实际请求服务器或从别处拿到)
-  let localIpValue = '192.168.0.101'; // 仅作示例
+    // 获取本机 IP
+    fetch('/api/local-ip')
+      .then(res => res.json())
+      .then(data => {
+        setLocalIp(data.localIp || '未获取');
+      })
+      .catch(err => {
+        console.error('获取本机 IP 失败:', err);
+        setLocalIp('获取失败');
+      });
 
-  // 3) 将它们填充到 <span id="localIp"> 和 <span id="tvIp">
-  document.getElementById('localIp').innerText = localIpValue;
-  document.getElementById('tvIp').innerText = tvIpValue;
-})
-.catch(err => {
-  console.error('header 加载失败:', err);
-});
+    // 获取正在控制的电视设备名称
+    const tvIp = getUrlParam('ip');
+    if (tvIp) {
+      fetch(`/api/get-device-name?ip=${tvIp}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.deviceName) {
+            setTvDeviceName(data.deviceName);
+          } else {
+            setTvDeviceName('获取失败');
+          }
+        })
+        .catch(err => {
+          console.error('获取设备名称失败:', err);
+          setTvDeviceName('获取失败');
+        });
+    } else {
+      setTvDeviceName('未连接');
+    }
+  })
+  .catch(err => {
+    console.error('加载 header 失败:', err);
+  });

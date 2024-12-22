@@ -1,19 +1,17 @@
+<!-- public/remote.html -->
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8">
   <title>小米电视遥控器</title>
-  <link href="./css/remote.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+  <!-- Header 和 Nav -->
   <div id="header-container"></div>
-
-    <!-- 这里插入一个导航容器 -->
-    <div id="nav-container"></div>
+  <div id="nav-container"></div>
 
   <h1>小米电视遥控器</h1>
-  <p>正在控制: <span id="tvIp"></span></p>
-
   <div class="remote-container">
     <div class="btn" data-key="up">↑</div>
     <div class="btn" data-key="left">←</div>
@@ -23,16 +21,18 @@
     <div class="btn" data-key="home">Home</div>
     <div class="btn" data-key="back">Back</div>
     <div class="btn" data-key="menu">Menu</div>
-    <div class="btn" data-key="power">power</div>
-    <div class="btn" data-key="volumeup">+</div>
-    <div class="btn" data-key="volumedown">-</div>
+    <div class="btn" data-key="power">Power</div>
+    <div class="btn" data-key="volumeup">Volume +</div>
+    <div class="btn" data-key="volumedown">Volume -</div>
   </div>
-  <!-- 在此处加载顶部栏，并执行页面自身逻辑 -->
-  <script src="./js/header.js"></script>
 
-  <!-- 在此处加载导航，并执行页面自身逻辑 -->
-  <script src="./js/nav.js"></script>
-  <!-- 在此处引入外部 JS 文件 -->
-  <script src="./js/remote.js"></script>
+  <a id="appBtn" href="#" class="app-list-button">进入应用列表</a>
+
+  <!-- 加载公共脚本 -->
+  <script src="js/common.js"></script>
+  <script src="js/header.js"></script>
+  <script src="js/nav.js"></script>
+  <!-- 加载页面特定脚本 -->
+  <script src="js/remote.js"></script>
 </body>
 </html>
