@@ -6,6 +6,7 @@
 </head>
 <body>
   <!-- 这里插入一个导航容器 -->
+  <div id="header-container"></div>
   <div id="nav-container"></div>
 
   <h1>小米电视扫描</h1>
@@ -15,34 +16,12 @@
   <p>已识别的小米电视:</p>
   <ul id="deviceList"></ul>
 
+  <!-- 在此处加载顶部栏，并执行页面自身逻辑 -->
+  <script src="./js/header.js"></script>
+
   <!-- 在此处加载导航，并执行页面自身逻辑 -->
-  <script>
-    fetch('nav.html')
-      .then(response => response.text())
-      .then(html => {
-        document.getElementById('nav-container').innerHTML = html;
-        
-        // 2) 解析当前页面 URL 中的 ip 参数
-        const urlParams = new URLSearchParams(window.location.search);
-        const tvIp = urlParams.get('ip'); 
-        // 若存在 ip，则把它带到导航链接中
-        if (tvIp) {
-          // 这3个 <a> 正是 nav.html 给的 id
-          const scanLink   = document.getElementById('nav-scan');
-          const remoteLink = document.getElementById('nav-remote');
-          const appsLink   = document.getElementById('nav-apps');
-
-          // 在原本 href 的基础上，追加 ?ip=xxx
-          scanLink.href   = `scan.html?ip=${tvIp}`;
-          remoteLink.href = `remote.html?ip=${tvIp}`;
-          appsLink.href   = `apps.html?ip=${tvIp}`;
-        }
-      })
-      .catch(err => {
-        console.error('导航加载失败:', err);
-      });
-  </script>
-
+  <script src="./js/nav.js"></script>
+  
   <!-- 在此处引入外部 JS 文件 -->
   <script src="./js/scan.js"></script>
 </body>
