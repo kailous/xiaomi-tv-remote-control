@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>小米电视扫描</title>
+</head>
+<body>
+  <h1>小米电视扫描</h1>
+  <button id="scanBtn">扫描局域网</button>
+
+  <p>本机IP: <span id="localIp"></span></p>
+  <p>开放6095端口的主机列表:</p>
+  <ul id="ipList"></ul>
+
+  <script>
+    document.getElementById('scanBtn').addEventListener('click', async () => {
+      document.getElementById('ipList').innerHTML = '扫描中...';
+      let response = await fetch('/scan');
+      let data = await response.json();
+
+      document.getElementById('localIp').innerText = data.localIp || '无';
+      if (data.openHosts && data.openHosts.length > 0) {
+        document.getElementById('ipList').innerHTML = '';
+        data.openHosts.forEach(ip => {
+          const li = document.createElement('li');
+          li.textContent = ip;
+          document.getElementById('ipList').appendChild(li);
+        });
+      } else {
+        document.getElementById('ipList').innerHTML = '未发现开启6095端口的主机。';
+      }
+    });
+  </script>
+</body>
+</html>
