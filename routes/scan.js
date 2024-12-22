@@ -1,43 +1,51 @@
-    // routes/scan.js
+// routes/scan.js
 const express = require('express');
 const router = express.Router();
 const net = require('net');
+const axios = require('axios');
 const ipLib = require('ip');
 
 router.get('/', async (req, res) => {
   try {
-    // 1. 获取本机 IP 和子网信息
-    const myIp = ipLib.address(); // 本机 IP，如 "192.168.1.101"
-    // 如果需要计算子网，可使用 ipLib.subnet(myIp, '255.255.255.0');
-
-    // 2. 假设网关在同网段 "192.168.1.x"
-    //   截取前三段作为前缀
+    // 1. 获取本机 IP
+    const myIp = ipLib.address(); // 本机 IP, 比如 "192.168.1.101"
+    
+    // 2. 根据实际情况截取网段 (如 192.168.1.x)
     const ipParts = myIp.split('.');
-    ipParts[3] = ''; // 去掉最后一段，为了后面拼接
+    ipParts[3] = '';
     const prefix = ipParts.join('.');
-
-    // 3. 扫描 192.168.1.1 ~ 192.168.1.254
     const start = 1;
     const end = 254;
 
     const openHosts = [];
     let completed = 0;
 
+    // 暂存最终结果
+    const devices = [];
+
     for (let i = start; i <= end; i++) {
       const testIp = prefix + i;
-
-      checkPort(testIp, 6095, (isOpen) => {
+      checkPort(testIp, 6095, async (isOpen) => {
         completed++;
         if (isOpen) {
-          // 如果端口开启，则记录下来
-          openHosts.push(testIp);
+          // 若端口开放，再调用 isalive 接口获取信息
+          const info = await getDeviceInfo(testIp);
+          if (info) {
+            // info 返回非空就说明是小米电视
+            devices.push(info);
+          } else {
+            // 如果不符合/接口不通，也可决定是否保留 testIp
+            // openHosts.push(testIp);
+          }
         }
 
-        // 当所有 IP 检查完毕后返回结果
+        // 当全部扫描结束后，返回结果
         if (completed === (end - start + 1)) {
+          // 若您仍想保留仅端口开放的列表，可 openHosts.push(testIp) 上面写好
+          // 这里只返回 devices 即可
           res.json({
             localIp: myIp,
-            openHosts
+            devices: devices
           });
         }
       });
@@ -48,10 +56,12 @@ router.get('/', async (req, res) => {
   }
 });
 
-// 封装一个端口检测函数
+/**
+ * checkPort: 检查某 IP 的指定端口是否开放
+ */
 function checkPort(host, port, callback) {
   const socket = new net.Socket();
-  socket.setTimeout(500); // 超时 500 ms
+  socket.setTimeout(500);
 
   socket.on('connect', () => {
     socket.destroy();
@@ -69,6 +79,32 @@ function checkPort(host, port, callback) {
   });
 
   socket.connect(port, host);
+}
+
+/**
+ * getDeviceInfo: 调用 http://host:6095/request?action=isalive
+ *                若成功，则返回电视信息对象；否则返回 null
+ */
+async function getDeviceInfo(host) {
+  try {
+    const url = `http://${host}:6095/request?action=isalive`;
+    const resp = await axios.get(url, { timeout: 1000 });
+    if (resp.data && resp.data.status === 0 && resp.data.data) {
+      // 这里可根据返回的字段进行提取
+      return {
+        ip: host,
+        devicename: resp.data.data.devicename,
+        build: resp.data.data.build,
+        version: resp.data.data.version,
+        // ...other fields as needed
+      };
+    } else {
+      return null;
+    }
+  } catch (e) {
+    // console.error('getDeviceInfo error:', e.message);
+    return null;
+  }
 }
 
 module.exports = router;

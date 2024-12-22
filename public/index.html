@@ -9,25 +9,32 @@
   <button id="scanBtn">扫描局域网</button>
 
   <p>本机IP: <span id="localIp"></span></p>
-  <p>开放6095端口的主机列表:</p>
-  <ul id="ipList"></ul>
+  <p>已识别的小米电视:</p>
+  <ul id="deviceList"></ul>
 
   <script>
     document.getElementById('scanBtn').addEventListener('click', async () => {
-      document.getElementById('ipList').innerHTML = '扫描中...';
+      document.getElementById('deviceList').innerHTML = '扫描中...';
       let response = await fetch('/scan');
       let data = await response.json();
 
       document.getElementById('localIp').innerText = data.localIp || '无';
-      if (data.openHosts && data.openHosts.length > 0) {
-        document.getElementById('ipList').innerHTML = '';
-        data.openHosts.forEach(ip => {
+      
+      // data.devices 里存着每台电视的 IP 和相关信息
+      if (data.devices && data.devices.length > 0) {
+        document.getElementById('deviceList').innerHTML = '';
+        data.devices.forEach(dev => {
           const li = document.createElement('li');
-          li.textContent = ip;
-          document.getElementById('ipList').appendChild(li);
+          // 这里只展示 devicename 和 ip
+          li.innerHTML = `
+            <strong>${dev.devicename || '未知设备'}</strong>
+            <br>IP: ${dev.ip}
+            <hr>
+          `;
+          document.getElementById('deviceList').appendChild(li);
         });
       } else {
-        document.getElementById('ipList').innerHTML = '未发现开启6095端口的主机。';
+        document.getElementById('deviceList').innerHTML = '暂无扫描到可用小米电视。';
       }
     });
   </script>
