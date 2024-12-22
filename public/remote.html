@@ -26,6 +26,25 @@
     .btn:hover {
       background: #aaa;
     }
+
+    /* 额外按钮样式 */
+    .app-list-button {
+      display: block;
+      width: 200px;
+      height: 40px;
+      margin: 20px auto;
+      line-height: 40px;
+      text-align: center;
+      background: #28a745;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    .app-list-button:hover {
+      background: #218838;
+    }
   </style>
 </head>
 <body>
@@ -44,13 +63,17 @@
     <!-- 更多按键可自行添加 -->
   </div>
 
+  <!-- 按钮：进入应用列表 -->
+  <!-- 也可以用 button 元素，但用 a 标签能直接 href 跳转 -->
+  <a id="appBtn" href="#" class="app-list-button">进入应用列表</a>
+
   <script>
     // 1. 解析 URL 参数中的 ip
     const urlParams = new URLSearchParams(window.location.search);
     const tvIp = urlParams.get('ip'); // 例如 "192.168.1.120"
     document.getElementById('tvIp').innerText = tvIp || '无';
 
-    // 2. 给每个按键绑定点击事件
+    // 2. 给每个遥控按键绑定点击事件
     document.querySelectorAll('.btn').forEach(button => {
       button.addEventListener('click', async () => {
         const keyName = button.getAttribute('data-key');
@@ -72,6 +95,18 @@
           console.error(`网络错误: ${err}`);
         }
       });
+    });
+
+    // 3. 跳转到应用列表页面
+    const appBtn = document.getElementById('appBtn');
+    appBtn.addEventListener('click', (e) => {
+      e.preventDefault(); // 阻止默认跳转
+      if (!tvIp) {
+        alert('未获取到电视IP');
+        return;
+      }
+      // 跳转到 apps.html，并带上电视 IP 参数
+      window.location.href = `apps.html?ip=${tvIp}`;
     });
   </script>
 </body>
