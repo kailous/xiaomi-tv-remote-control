@@ -1,0 +1,40 @@
+    /* 简单排版，可自行美化 */
+    .remote-container {
+        width: 200px;
+        margin: 20px auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .btn {
+        width: 60px;
+        height: 40px;
+        margin: 5px;
+        text-align: center;
+        line-height: 40px;
+        background: #ccc;
+        cursor: pointer;
+        border-radius: 5px;
+        user-select: none;
+      }
+      .btn:hover {
+        background: #aaa;
+      }
+      .app-list-button {
+        display: block;
+        width: 200px;
+        height: 40px;
+        margin: 20px auto;
+        line-height: 40px;
+        text-align: center;
+        background: #28a745;
+        color: #fff;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 5px;
+        text-decoration: none;
+      }
+      .app-list-button:hover {
+        background: #218838;
+      }
+  

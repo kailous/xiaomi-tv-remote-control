@@ -2,29 +2,18 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>小米电视遥控器</title>
-  <link href="./css/remote.css" rel="stylesheet">
+  <title>小米电视扫描</title>
 </head>
 <body>
-    <!-- 这里插入一个导航容器 -->
-    <div id="nav-container"></div>
+  <!-- 这里插入一个导航容器 -->
+  <div id="nav-container"></div>
 
-  <h1>小米电视遥控器</h1>
-  <p>正在控制: <span id="tvIp"></span></p>
+  <h1>小米电视扫描</h1>
+  <button id="scanBtn">扫描局域网</button>
 
-  <div class="remote-container">
-    <div class="btn" data-key="up">↑</div>
-    <div class="btn" data-key="left">←</div>
-    <div class="btn" data-key="enter">OK</div>
-    <div class="btn" data-key="right">→</div>
-    <div class="btn" data-key="down">↓</div>
-    <div class="btn" data-key="home">Home</div>
-    <div class="btn" data-key="back">Back</div>
-    <div class="btn" data-key="menu">Menu</div>
-    <div class="btn" data-key="power">power</div>
-    <div class="btn" data-key="volumeup">+</div>
-    <div class="btn" data-key="volumedown">-</div>
-  </div>
+  <p>本机IP: <span id="localIp"></span></p>
+  <p>已识别的小米电视:</p>
+  <ul id="deviceList"></ul>
 
   <!-- 在此处加载导航，并执行页面自身逻辑 -->
   <script>
@@ -53,7 +42,8 @@
         console.error('导航加载失败:', err);
       });
   </script>
+
   <!-- 在此处引入外部 JS 文件 -->
-  <script src="./js/remote.js"></script>
+  <script src="./js/scan.js"></script>
 </body>
 </html>

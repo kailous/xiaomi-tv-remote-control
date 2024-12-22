@@ -4,10 +4,16 @@ const path = require('path');
 
 const app = express();
 
+
+
 // 如果需要解析 POST 请求体，可以引入 body-parser
 // const bodyParser = require('body-parser');
 // app.use(bodyParser.json());
 // app.use(bodyParser.urlencoded({ extended: true }));
+
+app.get('/', (req, res) => {
+  res.redirect('/scan.html'); 
+});
 
 // 静态资源：将 public 文件夹对外开放
 app.use(express.static(path.join(__dirname, 'public')));

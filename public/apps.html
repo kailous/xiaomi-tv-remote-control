@@ -5,90 +5,42 @@
   <title>电视应用管理</title>
 </head>
 <body>
+    <!-- 这里插入一个导航容器 -->
+    <div id="nav-container"></div>
+
   <h1>电视应用列表</h1>
   <p>正在查看: <span id="tvIp"></span></p>
 
   <button id="loadAppsBtn">获取应用列表</button>
-
   <ul id="appList"></ul>
+<!-- 在此处加载导航，并执行页面自身逻辑 -->
+<script>
+  fetch('nav.html')
+      .then(response => response.text())
+      .then(html => {
+        document.getElementById('nav-container').innerHTML = html;
+        
+        // 2) 解析当前页面 URL 中的 ip 参数
+        const urlParams = new URLSearchParams(window.location.search);
+        const tvIp = urlParams.get('ip'); 
+        // 若存在 ip，则把它带到导航链接中
+        if (tvIp) {
+          // 这3个 <a> 正是 nav.html 给的 id
+          const scanLink   = document.getElementById('nav-scan');
+          const remoteLink = document.getElementById('nav-remote');
+          const appsLink   = document.getElementById('nav-apps');
 
-  <script>
-    // 1. 获取 URL 参数里的 IP
-    const urlParams = new URLSearchParams(window.location.search);
-    const tvIp = urlParams.get('ip'); // 例如 "192.168.0.102"
-    const tvIpSpan = document.getElementById('tvIp');
-    tvIpSpan.innerText = tvIp || '无';
-
-    const loadAppsBtn = document.getElementById('loadAppsBtn');
-    const appList = document.getElementById('appList');
-
-    // 2. 点击按钮时，向后端请求应用列表
-    loadAppsBtn.addEventListener('click', async () => {
-      if (!tvIp) {
-        alert('IP 不存在，无法获取应用列表');
-        return;
-      }
-      try {
-        appList.innerHTML = '加载中...';
-        const response = await fetch(`/tv/apps?ip=${tvIp}`);
-        const data = await response.json();
-        if (data.success) {
-          // data.apps 可能是数组，每个元素包含 pkg、label
-          renderApps(data.apps);
-        } else {
-          appList.innerHTML = `获取失败: ${data.error || '未知错误'}`;
-          console.error(data.raw);
+          // 在原本 href 的基础上，追加 ?ip=xxx
+          scanLink.href   = `scan.html?ip=${tvIp}`;
+          remoteLink.href = `remote.html?ip=${tvIp}`;
+          appsLink.href   = `apps.html?ip=${tvIp}`;
         }
-      } catch (err) {
-        appList.innerHTML = '网络错误:' + err;
-      }
-    });
-
-    // 3. 渲染应用列表
-    function renderApps(apps) {
-      // apps 是一个数组
-      // 形如: [ { pkg: "com.bilibili.tv", label: "哔哩哔哩TV版" }, ... ]
-      if (!apps || apps.length === 0) {
-        appList.innerHTML = '暂无应用或列表为空';
-        return;
-      }
-
-      appList.innerHTML = '';
-      apps.forEach(app => {
-        const li = document.createElement('li');
-        // 将应用名、包名显示出来，并加一个「启动」按钮
-        li.innerHTML = `
-          <img src="${app.icon}" />
-          <strong>${app.label || '[无应用名]'}</strong>
-          <button class="launchBtn">启动</button>
-        `;
-        // 点击启动按钮时，调用后台 /tv/launch?ip=xxx&pkg=xxx
-        const button = li.querySelector('.launchBtn');
-        button.addEventListener('click', () => launchApp(app.pkg));
-        appList.appendChild(li);
+      })
+      .catch(err => {
+        console.error('导航加载失败:', err);
       });
-    }
-
-    // 4. 启动指定应用
-    async function launchApp(pkg) {
-      if (!tvIp) {
-        alert('IP 不存在，无法启动');
-        return;
-      }
-      try {
-        const response = await fetch(`/tv/launch?ip=${tvIp}&pkg=${pkg}`);
-        const data = await response.json();
-        if (data.success) {
-          alert(`已请求启动 [${pkg}]`);
-        } else {
-          alert(`启动失败: ${data.error}`);
-          console.error(data.raw);
-        }
-      } catch (err) {
-        console.error('网络错误:', err);
-      }
-    }
-
-  </script>
+</script>
+  <!-- 在此处引入外部 JS 文件 -->
+  <script src="./js/apps.js"></script>
 </body>
 </html>
