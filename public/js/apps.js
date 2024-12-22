@@ -10,7 +10,7 @@ window.addEventListener('DOMContentLoaded', () => {
    */
   async function loadApps() {
     if (!tvIp) {
-      alert('还没有连接电视哦，无法获取应用列表');
+      await showPopup('还没有连接电视哦，无法获取应用列表');
       window.location.href = 'scan.html'; // 重定向到首页
       return;
     }
@@ -23,10 +23,12 @@ window.addEventListener('DOMContentLoaded', () => {
       } else {
         appList.innerHTML = `获取失败: ${data.msg || '未知错误'}`;
         console.error('获取应用列表失败:', data);
+        await showPopup(`获取应用列表失败: ${data.msg || '未知错误'}`);
       }
     } catch (err) {
       appList.innerHTML = '网络错误: ' + err;
       console.error('获取应用列表出错:', err);
+      await showPopup(`网络错误: ${err}`);
     }
   }
 
@@ -43,12 +45,14 @@ window.addEventListener('DOMContentLoaded', () => {
     apps.forEach(app => {
       const li = document.createElement('li');
       li.innerHTML = `
-        <img src="${app.IconURL}" alt="图标" style="width:40px;height:40px;vertical-align:middle;" />
+        <button class="launchBtn">
+          <img src="${app.IconURL}" alt="图标" style="width:40px;height:40px;vertical-align:middle;" />
+        </button>
         <strong>${app.AppName || '[无应用名]'}</strong>
-        <button class="launchBtn">启动</button>
       `;
       const button = li.querySelector('.launchBtn');
-      button.addEventListener('click', () => launchApp(app.PackageName));
+      // 传递应用包名和应用名称
+      button.addEventListener('click', () => launchApp(app.PackageName, app.AppName));
       appList.appendChild(li);
     });
   }
@@ -56,29 +60,30 @@ window.addEventListener('DOMContentLoaded', () => {
   /**
    * 启动指定应用
    * @param {string} pkg - 应用包名
+   * @param {string} appName - 应用名称
    */
-  async function launchApp(pkg) {
+  async function launchApp(pkg, appName) {
     if (!tvIp) {
-      alert('IP 不存在，无法启动');
+      await showPopup('IP 不存在，无法启动');
       window.location.href = 'scan.html'; // 重定向到首页
       return;
     }
     if (!pkg) {
-      alert('应用包名不存在，无法启动');
+      await showPopup('应用包名不存在，无法启动');
       return;
     }
     try {
-      const response = await fetch(`/tv/launch?ip=${tvIp}&packagename=${pkg}`);
+      const response = await fetch(`/tv/launch?ip=${tvIp}&packagename=${encodeURIComponent(pkg)}`);
       const data = await response.json();
       if (data.status === 0) {
-        alert(`已请求启动 [${pkg}]`);
+        await showPopup(`[${appName}] 已请求启动`); // 显示应用名称
       } else {
-        alert(`启动失败: ${data.msg || '未知错误'}`);
+        await showPopup(`启动失败: ${data.msg || '未知错误'}`);
         console.error('启动应用失败:', data);
       }
     } catch (err) {
       console.error('启动应用出错:', err);
-      alert('启动应用出错: ' + err);
+      await showPopup(`启动应用出错: ${err}`);
     }
   }
 

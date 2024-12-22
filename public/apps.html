@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <title>电视应用管理</title>
   <link rel="stylesheet" href="css/styles.css">
+  <!-- 由于弹窗样式已被封装在 Shadow DOM 中，这里不需要单独引入 popup.css -->
 </head>
 <body>
   <!-- Header 和 Nav -->
@@ -15,7 +16,7 @@
   <button id="loadAppsBtn">刷新列表</button>
   <ul id="appList"></ul>
 
-  <!-- 加载公共脚本 -->
+  <!-- 加载弹窗组件和公共脚本 -->
   <script src="js/common.js"></script>
   <script src="js/header.js"></script>
   <script src="js/nav.js"></script>

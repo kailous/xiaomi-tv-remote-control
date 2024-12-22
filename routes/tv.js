@@ -5,16 +5,16 @@ const axios = require('axios');
 
 /**
  * 配置电视的基础 URL
- * @param {string} ip - 电视的 IP 地址（包括端口）
+ * @param {string} ip - 电视的 IP 地址（不包含端口）
  * @returns {string} 电视的基础 URL
  */
 function getTvBaseUrl(ip) {
-  return `http://${ip}`;
+  return `http://${ip}:6095`;
 }
 
 /**
  * 发送请求到电视的指定 API
- * @param {string} ip - 电视的 IP 地址（包括端口）
+ * @param {string} ip - 电视的 IP 地址（不包含端口）
  * @param {string} action - 动作名称
  * @param {object} params - 其他参数
  * @returns {object} 电视的响应
@@ -25,15 +25,7 @@ async function sendRequest(ip, action, params = {}) {
   url.searchParams.append('action', action);
 
   // 根据不同的动作，调整请求参数
-  if (action === 'getinstalledapp') {
-    Object.keys(params).forEach(key => {
-      url.searchParams.append(key, params[key]);
-    });
-  } else if (action === 'startapp') {
-    Object.keys(params).forEach(key => {
-      url.searchParams.append(key, params[key]);
-    });
-  } else if (action === 'keyevent') {
+  if (action === 'getinstalledapp' || action === 'startapp' || action === 'keyevent') {
     Object.keys(params).forEach(key => {
       url.searchParams.append(key, params[key]);
     });
@@ -51,7 +43,7 @@ async function sendRequest(ip, action, params = {}) {
 /**
  * 获取电视基础信息
  * API: http://xxx.xxx.xxx.xxx:6095/request?action=isalive
- * @param {string} ip - 电视的 IP 地址（包括端口）
+ * @param {string} ip - 电视的 IP 地址（不包含端口）
  * @returns {object} 电视的基础信息
  */
 async function getDeviceInfo(ip) {
@@ -69,7 +61,7 @@ async function getDeviceInfo(ip) {
 
 /**
  * 获取电视设备名称
- * @param {string} ip - 电视的 IP 地址（包括端口）
+ * @param {string} ip - 电视的 IP 地址（不包含端口）
  * @returns {string} 设备名称
  */
 async function getDeviceName(ip) {

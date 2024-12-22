@@ -9,7 +9,7 @@ window.addEventListener('DOMContentLoaded', () => {
    */
   async function sendKeyEvent(key) {
     if (!tvIp) {
-      alert('未获取到电视IP');
+      showPopup('未获取到电视IP');
       return;
     }
 
@@ -20,11 +20,11 @@ window.addEventListener('DOMContentLoaded', () => {
         console.log(`按键 ${key} 发送成功`);
       } else {
         console.error(`按键 ${key} 发送失败:`, data.msg);
-        alert(`按键发送失败: ${data.msg || '未知错误'}`);
+        showPopup(`按键发送失败: ${data.msg || '未知错误'}`);
       }
     } catch (err) {
       console.error(`网络错误:`, err);
-      alert(`网络错误: ${err}`);
+      showPopup(`网络错误: ${err}`);
     }
   }
 
@@ -41,7 +41,7 @@ window.addEventListener('DOMContentLoaded', () => {
   appBtn.addEventListener('click', (e) => {
     e.preventDefault();
     if (!tvIp) {
-      alert('未获取到电视IP');
+      showPopup('未获取到电视IP');
       return;
     }
     window.location.href = `apps.html?ip=${tvIp}`;
