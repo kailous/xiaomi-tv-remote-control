@@ -58,7 +58,8 @@
         const li = document.createElement('li');
         // 将应用名、包名显示出来，并加一个「启动」按钮
         li.innerHTML = `
-          <strong>${app.label || '[无应用名]'}</strong> - ${app.pkg}
+          <img src="${app.icon}" />
+          <strong>${app.label || '[无应用名]'}</strong>
           <button class="launchBtn">启动</button>
         `;
         // 点击启动按钮时，调用后台 /tv/launch?ip=xxx&pkg=xxx

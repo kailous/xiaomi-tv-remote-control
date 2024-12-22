@@ -81,9 +81,9 @@ router.get('/apps', async (req, res) => {
       ) {
         // 将 AppInfo 映射成您想返回的字段
         const apps = resp.data.data.AppInfo.map(app => ({
-          pkg: app.PackageName, // 或者直接 pkg: app.PackageName
-          label: app.AppName,
-          icon: app.IconURL
+            pkg: app.PackageName,
+            label: app.AppName,
+            icon: app.IconURL
         }));
         res.json({ success: true, apps });
       } else {
