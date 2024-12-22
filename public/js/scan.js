@@ -15,9 +15,10 @@ window.addEventListener('DOMContentLoaded', () => {
         data.devices.forEach(dev => {
           const li = document.createElement('li');
           li.innerHTML = `
-            <strong>${dev.devicename || '未知设备'}</strong>
-            <br>IP: ${dev.ip}
-            <a href="remote.html?ip=${dev.ip.split(':')[0]}" target="_blank">打开遥控器</a>
+            <a href="remote.html?ip=${dev.ip.split(':')[0]}" target="_blank">
+              <strong>${dev.devicename || '未知设备'}</strong>
+              <br>IP: ${dev.ip}
+            </a>
             <hr>
           `;
           deviceList.appendChild(li);
