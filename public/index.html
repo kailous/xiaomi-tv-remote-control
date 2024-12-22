@@ -29,6 +29,7 @@
           li.innerHTML = `
             <strong>${dev.devicename || '未知设备'}</strong>
             <br>IP: ${dev.ip}
+            <a href="remote.html?ip=${dev.ip}" target="_blank">打开遥控器</a>
             <hr>
           `;
           document.getElementById('deviceList').appendChild(li);

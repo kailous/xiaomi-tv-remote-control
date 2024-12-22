@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>小米电视遥控器</title>
+  <style>
+    /* 简单排版，可自行美化 */
+    .remote-container {
+      width: 200px;
+      margin: 20px auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .btn {
+      width: 60px;
+      height: 40px;
+      margin: 5px;
+      text-align: center;
+      line-height: 40px;
+      background: #ccc;
+      cursor: pointer;
+      border-radius: 5px;
+      user-select: none;
+    }
+    .btn:hover {
+      background: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <h1>小米电视遥控器</h1>
+  <p>正在控制: <span id="tvIp"></span></p>
+
+  <div class="remote-container">
+    <div class="btn" data-key="up">↑</div>
+    <div class="btn" data-key="left">←</div>
+    <div class="btn" data-key="ok">OK</div>
+    <div class="btn" data-key="right">→</div>
+    <div class="btn" data-key="down">↓</div>
+    <div class="btn" data-key="home">Home</div>
+    <div class="btn" data-key="back">Back</div>
+    <div class="btn" data-key="menu">Menu</div>
+    <!-- 更多按键可自行添加 -->
+  </div>
+
+  <script>
+    // 1. 解析 URL 参数中的 ip
+    const urlParams = new URLSearchParams(window.location.search);
+    const tvIp = urlParams.get('ip'); // 例如 "192.168.1.120"
+    document.getElementById('tvIp').innerText = tvIp || '无';
+
+    // 2. 给每个按键绑定点击事件
+    document.querySelectorAll('.btn').forEach(button => {
+      button.addEventListener('click', async () => {
+        const keyName = button.getAttribute('data-key');
+        if (!tvIp) {
+          alert('未获取到电视IP');
+          return;
+        }
+        
+        try {
+          // 这里调用我们后端 /tv/key 接口，传递 ip 和 keyName
+          const response = await fetch(`/tv/key?ip=${tvIp}&keyName=${keyName}`);
+          const data = await response.json();
+          if (data.success) {
+            console.log(`按键 ${keyName} 发送成功`);
+          } else {
+            console.error(`按键 ${keyName} 发送失败`, data.error);
+          }
+        } catch (err) {
+          console.error(`网络错误: ${err}`);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

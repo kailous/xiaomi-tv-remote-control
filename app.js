@@ -15,6 +15,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // 引入扫描路由
 const scanRouter = require('./routes/scan');
 app.use('/scan', scanRouter);
+// 引入遥控器
+const tvRouter = require('./routes/tv');
+app.use('/tv', tvRouter);
 
 // 启动服务器
 const PORT = 3000;
