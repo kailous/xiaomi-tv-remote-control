@@ -10,10 +10,21 @@ fetch('header.html')
       .then(res => res.json())
       .then(data => {
         setLocalIp(data.localIp || '未获取');
+        const ipTipElem = document.getElementById('ipTip');
+        if (ipTipElem) {
+          ipTipElem.innerText = data.tip || '';
+        }
+
+        window.__localIpInfo = data;
+        document.dispatchEvent(new CustomEvent('local-ip-info', { detail: data }));
       })
       .catch(err => {
         console.error('获取本机 IP 失败:', err);
         setLocalIp('获取失败');
+        const ipTipElem = document.getElementById('ipTip');
+        if (ipTipElem) {
+          ipTipElem.innerText = '无法获取服务端 IP，请在扫描页手动填写内网网段。';
+        }
       });
 
     // 获取正在控制的电视设备名称

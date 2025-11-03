@@ -24,6 +24,31 @@
               </div>
               <button id="scanBtn" class="btn btn-primary btn-lg px-4">开始扫描</button>
             </div>
+            <div id="manualSubnetAlert" class="alert alert-warning d-flex align-items-start gap-2 mt-4 d-none" role="alert">
+              <span class="badge text-bg-warning flex-shrink-0">提示</span>
+              <div>如果当前服务部署在公网/云服务器，请在下方输入家庭/办公网络的前三段地址（例如 <code>192.168.1</code>）后再执行扫描。</div>
+            </div>
+            <form id="scanForm" class="row g-3 mt-2" novalidate autocomplete="off">
+              <div class="col-12 col-md-6">
+                <label for="subnetInput" class="form-label">内网网段</label>
+                <input type="text" class="form-control" id="subnetInput" placeholder="例如 192.168.1" inputmode="numeric" autocomplete="off">
+                <div class="form-text">填写前三段数字，我们会自动扫描 <code>.1</code> 到 <code>.254</code>。</div>
+              </div>
+              <div class="col-6 col-md-3">
+                <label for="rangeStartInput" class="form-label">起始地址</label>
+                <input type="number" class="form-control" id="rangeStartInput" value="1" min="1" max="254">
+              </div>
+              <div class="col-6 col-md-3">
+                <label for="rangeEndInput" class="form-label">结束地址</label>
+                <input type="number" class="form-control" id="rangeEndInput" value="254" min="1" max="254">
+              </div>
+              <div class="col-12 col-md-4 col-lg-3">
+                <label for="portInput" class="form-label">端口</label>
+                <input type="number" class="form-control" id="portInput" value="6095" min="1" max="65535">
+                <div class="form-text">默认端口为 6095，如电视端口有改动可手动设置。</div>
+              </div>
+            </form>
+            <p id="scanRangeInfo" class="text-muted small mt-3 mb-0"></p>
             <div id="deviceList" class="list-group list-group-flush mt-4"></div>
           </div>
         </div>
