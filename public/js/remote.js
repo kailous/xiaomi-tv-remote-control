@@ -9,41 +9,43 @@ window.addEventListener('DOMContentLoaded', () => {
    */
   async function sendKeyEvent(key) {
     if (!tvIp) {
-      showPopup('未获取到电视IP');
+      showPopup('未获取到电视 IP，无法下发指令。');
       return;
     }
 
     try {
       const response = await fetch(`/tv/key?ip=${tvIp}&keycode=${key}`);
       const data = await response.json();
-      if (data.status === 0) {
-        console.log(`按键 ${key} 发送成功`);
-      } else {
+      if (data.status !== 0) {
         console.error(`按键 ${key} 发送失败:`, data.msg);
-        showPopup(`按键发送失败: ${data.msg || '未知错误'}`);
+        await showPopup(`按键发送失败：${data.msg || '未知错误'}`);
       }
-    } catch (err) {
-      console.error(`网络错误:`, err);
-      showPopup(`网络错误: ${err}`);
+    } catch (error) {
+      console.error('按键发送网络错误:', error);
+      await showPopup(`网络错误：${error.message || error}`);
     }
   }
 
   // 绑定遥控按键事件
-  document.querySelectorAll('.btn').forEach(button => {
+  document.querySelectorAll('.remote-btn[data-key]').forEach(button => {
     button.addEventListener('click', () => {
       const keyName = button.getAttribute('data-key');
-      sendKeyEvent(keyName);
+      if (keyName) {
+        sendKeyEvent(keyName);
+      }
     });
   });
 
   // 跳转到应用列表页面
   const appBtn = document.getElementById('appBtn');
-  appBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (!tvIp) {
-      showPopup('未获取到电视IP');
-      return;
-    }
-    window.location.href = `apps.html?ip=${tvIp}`;
-  });
+  if (appBtn) {
+    appBtn.addEventListener('click', (event) => {
+      event.preventDefault();
+      if (!tvIp) {
+        showPopup('未获取到电视 IP，无法跳转到应用列表。');
+        return;
+      }
+      window.location.href = `apps.html?ip=${tvIp}`;
+    });
+  }
 });

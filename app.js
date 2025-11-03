@@ -4,11 +4,11 @@ const path = require('path');
 const app = express();
 
 // 引入路由
-const scanRoutes = require('../routes/scan');
-const tvRoutes = require('../routes/tv');
+const scanRoutes = require('./routes/scan');
+const tvRoutes = require('./routes/tv');
 
 // 设置静态文件目录，并将默认的 index 文件设置为 scan.html
-app.use(express.static(path.join(__dirname, '../public'), { index: 'scan.html' }));
+app.use(express.static(path.join(__dirname, 'public'), { index: 'scan.html' }));
 
 // 使用路由
 app.use('/', scanRoutes);

@@ -15,15 +15,23 @@ function getUrlParam(param) {
  * @param {string} ip - 电视 IP
  */
 function updateNavLinks(ip) {
-  if (ip) {
-    const navScan = document.getElementById('nav-scan');
-    const navRemote = document.getElementById('nav-remote');
-    const navApps = document.getElementById('nav-apps');
+  const linkConfig = [
+    { key: 'scan', path: 'scan.html', appendIp: true },
+    { key: 'remote', path: 'remote.html', appendIp: true },
+    { key: 'apps', path: 'apps.html', appendIp: true }
+  ];
 
-    if (navScan) navScan.href = `scan.html?ip=${ip}`;
-    if (navRemote) navRemote.href = `remote.html?ip=${ip}`;
-    if (navApps) navApps.href = `apps.html?ip=${ip}`;
-  }
+  linkConfig.forEach(({ key, path, appendIp }) => {
+    const links = document.querySelectorAll(`[data-link=\"${key}\"]`);
+    links.forEach(link => {
+      let href = path;
+      if (appendIp && ip) {
+        const separator = path.includes('?') ? '&' : '?';
+        href = `${path}${separator}ip=${encodeURIComponent(ip)}`;
+      }
+      link.setAttribute('href', href);
+    });
+  });
 }
 
 /**

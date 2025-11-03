@@ -1,67 +1,187 @@
 /* public/css/styles.css */
 
-/* 全局样式 */
+/* 全局基础样式 */
 body {
-  font-family: Arial, sans-serif;
-  margin: 20px;
+  font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+  background-color: #f4f6fb;
+  color: #1f2937;
+  min-height: 100vh;
 }
 
-/* Header 样式 */
-header {
-  border-bottom: 1px solid #ddd;
-  padding: 10px;
-  background-color: #f8f9fa;
+main {
+  padding-bottom: 3rem;
 }
 
-/* Nav 样式 */
-nav a {
-  color: #fff;
-  margin-right: 20px;
-  text-decoration: none;
+.card {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 15px 30px rgba(15, 23, 42, 0.08);
 }
 
-nav a:hover {
-  text-decoration: underline;
+.card .card-body {
+  padding: 2.25rem;
 }
 
-/* 遥控器按钮样式 */
-.remote-container {
-  width: 200px;
-  margin: 20px auto;
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.page-intro {
+  color: #6b7280;
+}
+
+body[data-page="scan"] [data-role="back-link"] {
+  display: none !important;
+}
+
+/* 扫描列表 */
+#deviceList {
+  margin-top: 1.5rem;
+}
+
+#deviceList .list-group-item {
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1rem 0;
+}
+
+#deviceList .list-group-item:last-child {
+  border-bottom: none;
+}
+
+#deviceList .device-meta {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
-.btn {
-  width: 60px;
-  height: 40px;
-  margin: 5px;
+#deviceList .device-name {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+#deviceList .device-ip {
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+/* 空状态 & 提示 */
+.empty-state {
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  background: #eff6ff;
+  color: #1d4ed8;
   text-align: center;
-  line-height: 40px;
-  background: #ccc;
-  cursor: pointer;
-  border-radius: 5px;
-  user-select: none;
+  font-weight: 500;
 }
 
-.btn:hover {
-  background: #aaa;
+.loading-state {
+  color: #6b7280;
 }
 
-/* 应用列表样式 */
-#appList li {
-  list-style: none;
-  margin-bottom: 10px;
+/* 遥控器布局 */
+.remote-card .remote-section + .remote-section {
+  margin-top: 1.75rem;
 }
 
-#appList img {
-  vertical-align: middle;
-  margin-right: 10px;
+.remote-section-title {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #94a3b8;
+  margin-bottom: 0.75rem;
 }
 
-.launchBtn {
-  margin-left: 10px;
-  padding: 5px 10px;
-  cursor: pointer;
+.remote-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+}
+
+.remote-pad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(90px, 1fr));
+  gap: 0.75rem;
+}
+
+.remote-pad-grid .remote-btn[data-position="up"] {
+  grid-column: 2;
+}
+
+.remote-pad-grid .remote-btn[data-position="left"] {
+  grid-column: 1;
+}
+
+.remote-pad-grid .remote-btn[data-position="enter"] {
+  grid-column: 2;
+}
+
+.remote-pad-grid .remote-btn[data-position="right"] {
+  grid-column: 3;
+}
+
+.remote-pad-grid .remote-btn[data-position="down"] {
+  grid-column: 2;
+}
+
+.remote-btn {
+  padding: 0.75rem 1rem;
+  border-width: 2px;
+  border-radius: 0.85rem;
+  font-weight: 600;
+  text-transform: none;
+}
+
+.remote-btn.remote-btn-primary {
+  border-color: #2563eb;
+  background-color: #2563eb;
+  color: #fff;
+}
+
+.remote-btn.remote-btn-primary:hover {
+  background-color: #1d4ed8;
+  border-color: #1d4ed8;
+}
+
+/* 应用列表 */
+#appList {
+  margin-top: 1.5rem;
+}
+
+#appList .app-card {
+  border: none;
+  border-radius: 1rem;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#appList .app-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 35px rgba(15, 23, 42, 0.12);
+}
+
+#appList .app-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 0.75rem;
+  background: #f9fafb;
+  object-fit: contain;
+  margin-right: 0.75rem;
+}
+
+#appList .btn-launch {
+  font-weight: 600;
+}
+
+@media (max-width: 575.98px) {
+  .card .card-body {
+    padding: 1.75rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
 }

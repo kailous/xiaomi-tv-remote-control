@@ -1,5 +1,19 @@
 <!-- public/nav.html -->
-<nav style="background: #333; color: #fff; padding: 10px;">
-  <a id="nav-remote" href="remote.html" style="color: #fff; margin-right: 20px;">遥控器</a>
-  <a id="nav-apps" href="apps.html" style="color: #fff;">应用列表</a>
+<nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-semibold" data-link="scan" data-page-link="scan" href="scan.html">Mi TV 控制台</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="切换导航">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" data-link="remote" data-page-link="remote" href="remote.html">遥控器</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-link="apps" data-page-link="apps" href="apps.html">应用列表</a>
+        </li>
+      </ul>
+    </div>
+  </div>
 </nav>
